@@ -25,8 +25,21 @@ let contacts = [
       "number": "39-23-6423122"
     }
 ];
+const amount = contacts.length;
+const date = new Date();
+const utcDate = date.toString();
+let info = [
+   'Phonebook has info for ' + amount +' people',
+   utcDate
 
-app.get('/api/persons', (request, response) => {response.json(contacts)})
+]
+
+
+app.get('/api/persons', (request, response) => { response.json(contacts) })
+
+app.get('/info', (request, response) => { response.json(info) })
+
+
 
 
 const PORT = 3001
