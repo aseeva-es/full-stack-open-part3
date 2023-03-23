@@ -39,7 +39,15 @@ app.get('/api/persons', (request, response) => { response.json(contacts) })
 
 app.get('/info', (request, response) => { response.json(info) })
 
-
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const contact = contacts.find(contact => contact.id === id)
+  if(contact){
+    response.json(contact)
+  } else {
+    response.status(404).end(`'Can't find'` );
+  }
+})
 
 
 const PORT = 3001
