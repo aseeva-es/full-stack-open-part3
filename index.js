@@ -28,16 +28,12 @@ let contacts = [
 const amount = contacts.length;
 const date = new Date();
 const utcDate = date.toString();
-let info = [
-   'Phonebook has info for ' + amount +' people',
-   utcDate
-
-]
+let info = 'Phonebook has info for ' + amount +' people </br>'+utcDate;
 
 
 app.get('/api/persons', (request, response) => { response.json(contacts) })
 
-app.get('/info', (request, response) => { response.json(info) })
+app.get('/info', (request, response) => { response.send(info) })
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
@@ -45,8 +41,19 @@ app.get('/api/persons/:id', (request, response) => {
   if(contact){
     response.json(contact)
   } else {
-    response.status(404).end(`'Can't find'` );
+    response.status(404).end('Person not found' );
   }
+})
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const contact = contacts.find(contact => contact.id === id)
+  if(contact){
+    contacts = contacts.filter(contact => contact.id !== id);
+    response.status(204).end('Contact deleted' );
+  } else {
+    response.status(404).end('Person not found');
+  }
+  
 })
 
 
