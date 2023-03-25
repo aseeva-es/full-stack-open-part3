@@ -61,24 +61,37 @@ const generateId = (min = 1, max = 1000) => {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
+const nameExist = (contacts, name) => {
+  const found = contacts.filter(( contact ) => contact.name === name );
+  return found.length ? true : false;
+
+}
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
   console.log("body: ", body);
+  console.log("contacts: ", contacts);
+
   if(!body) {
     return response.status(400).json({ 
       error: 'content missing' 
     })
   }
-  
+  if(!body.name){
+    return response.status(400).json({error: 'please enter name'})
+  }
+  if(!body.number){
+    return response.status(400).json({error: 'please enter number'})
+  }
+  if(nameExist(contacts, body.name)){
+    return response.status(400).json({error: 'name must be unique'})
+  }
   const contact = {
+    id: generateId(),
     name: body.name,
     number: body.number,
-    id: generateId(),
   }
-
   contacts = contacts.concat(contact);
-
   console.log('contact: ', contact)
   response.json(contact)
 })
