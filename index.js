@@ -1,7 +1,8 @@
-const { request, response } = require('express');
+const { request, response, json } = require('express');
 const express = require('express');
 const app = express();
 
+app.use(express.json());
 
 let contacts = [
     { 
@@ -43,7 +44,8 @@ app.get('/api/persons/:id', (request, response) => {
   } else {
     response.status(404).end('Person not found' );
   }
-})
+});
+
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
   const contact = contacts.find(contact => contact.id === id)
@@ -53,7 +55,32 @@ app.delete('/api/persons/:id', (request, response) => {
   } else {
     response.status(404).end('Person not found');
   }
+});
+
+const generateId = (min = 1, max = 1000) => {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
+
+  console.log("body: ", body);
+  if(!body) {
+    return response.status(400).json({ 
+      error: 'content missing' 
+    })
+  }
   
+  const contact = {
+    name: body.name,
+    number: body.number,
+    id: generateId(),
+  }
+
+  contacts = contacts.concat(contact);
+
+  console.log('contact: ', contact)
+  response.json(contact)
 })
 
 
