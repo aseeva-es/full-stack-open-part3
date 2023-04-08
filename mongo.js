@@ -23,53 +23,53 @@ else {
 
 
 
-function printList(){
-    const password = process.argv[2];
-    const url =
-     `mongodb+srv://aseevaes:${password}@cluster0.j3sslxx.mongodb.net/phoneBook?retryWrites=true&w=majority`
+// function printList(){
+//     const password = process.argv[2];
+//     const url =
+//      `mongodb+srv://aseevaes:${password}@cluster0.j3sslxx.mongodb.net/phoneBook?retryWrites=true&w=majority`
   
-  mongoose.set('strictQuery',false);
-  mongoose.connect(url);
+//   mongoose.set('strictQuery',false);
+//   mongoose.connect(url);
 
-  const contactSchema = new mongoose.Schema({
-    name: String,
-    number: String
-});
+//   const contactSchema = new mongoose.Schema({
+//     name: String,
+//     number: String
+// });
  
-const Contact = mongoose.model('Contact', contactSchema);
+// const Contact = mongoose.model('Contact', contactSchema);
 
-  Contact.find({}).then(book => {
-    console.log(`phonebook: `);
-    book.forEach((contact)=>{console.log(contact.name, contact.number)})
-    mongoose.connection.close()
-})
-}
+//   Contact.find({}).then(book => {
+//     console.log(`phonebook: `);
+//     book.forEach((contact)=>{console.log(contact.name, contact.number)})
+//     mongoose.connection.close()
+// })
+// }
 
-function addContact(){
-    const password = process.argv[2];
-    const name = process.argv[3];
-    const number = process.argv[4];
-    const url =
-     `mongodb+srv://aseevaes:${password}@cluster0.j3sslxx.mongodb.net/phoneBook?retryWrites=true&w=majority`
+// function addContact(){
+//     const password = process.argv[2];
+//     const name = process.argv[3];
+//     const number = process.argv[4];
+//     const url =
+//      `mongodb+srv://aseevaes:${password}@cluster0.j3sslxx.mongodb.net/phoneBook?retryWrites=true&w=majority`
   
-  mongoose.set('strictQuery',false);
-  mongoose.connect(url);
+//   mongoose.set('strictQuery',false);
+//   mongoose.connect(url);
   
-  const contactSchema = new mongoose.Schema({
-      name: String,
-      number: String
-  });
+//   const contactSchema = new mongoose.Schema({
+//       name: String,
+//       number: String
+//   });
    
-  const Contact = mongoose.model('Contact', contactSchema);
+//   const Contact = mongoose.model('Contact', contactSchema);
   
-  const contact = new Contact ({
-      name: name,
-      number: number,
-  });
+//   const contact = new Contact ({
+//       name: name,
+//       number: number,
+//   });
   
-  contact.save().then(result => {
-      console.log(`added ${name} ${number} to phonebook `)
-      mongoose.connection.close()
-  })
+//   contact.save().then(result => {
+//       console.log(`added ${name} ${number} to phonebook `)
+//       mongoose.connection.close()
+//   })
 
-}
+// }
