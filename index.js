@@ -10,10 +10,11 @@ const listContacts = require("./funcs/listContacts");
 const addContact = require("./funcs/addContact");
 const getContact = require("./funcs/getContact");
 const delContact = require("./funcs/delContact");
+const updateContact = require("./funcs/updateContact");
 
 app.use(cors());
-app.use(express.json());
 app.use(express.static("build"));
+app.use(express.json());
 morgan.token("params", function (req, res) {
   return JSON.stringify(req.body);
 });
@@ -44,35 +45,44 @@ app.get("/info", (request, response) => {
   })
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
   console.log("id: ", id);
-  // const contact = contacts.find((contact) => contact.id === id);
   getContact(Contact, id).then(contact =>{
     if (contact) {
       response.json(contact);
     } else {
       response.status(404).end("Person not found");
     }
-
   })
+  .catch(error => next(error)
+  )
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+
+app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
  delContact(Contact, id)
  .then(contact => {
    if (contact) {
     console.log('deleted', contact)
      response.status(204).end("Contact deleted");
-   } else {
-     response.status(404).end("Person not found");
    }
-
  })
+ .catch(error => next(error))
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   const body = request.body;
 
   if (!body) {
@@ -86,18 +96,40 @@ app.post("/api/persons", (request, response) => {
   if (!body.number) {
     return response.status(400).json({ error: "please enter number" });
   }
-  // if (nameExist(contacts, body.name)) {
-  //   return response.status(400).json({ error: "name must be unique" });
-  // }
-
+ 
   addContact(body.name, body.number, Contact)
   .then((result) => {
     console.log(`added ${result.name} ${result.number} to phonebook `);
     response.json(result);
-  });
+  })
+  .catch(error => next(error));
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  const body = request.body;
+  const id = request.params.id;
+  if (!body) {
+    return response.status(400).json({
+      error: "content missing",
+    });
+  }
+  if (!body.name) {
+    return response.status(400).json({ error: "please enter name" });
+  }
+  if (!body.number) {
+    return response.status(400).json({ error: "please enter number" });
+  }
+ 
+  updateContact(Contact, id, body.name, body.number)
+  .then((result) => {
+    console.log(`updated ${result.name} ${result.number} in the phonebook `);
+    response.json(result);
+  })
+  .catch(error => next(error));
 });
 
 app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
