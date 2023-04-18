@@ -59,17 +59,6 @@ app.get("/api/persons/:id", (request, response, next) => {
   )
 });
 
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } 
-
-  next(error)
-}
-
-
 app.delete("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
  delContact(Contact, id)
@@ -106,21 +95,22 @@ app.post("/api/persons", (request, response, next) => {
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
-  const body = request.body;
+
+  const {name, number} = request.body;
   const id = request.params.id;
-  if (!body) {
+  if (!request.body) {
     return response.status(400).json({
       error: "content missing",
     });
   }
-  if (!body.name) {
+  if (!name) {
     return response.status(400).json({ error: "please enter name" });
   }
-  if (!body.number) {
+  if (!number) {
     return response.status(400).json({ error: "please enter number" });
   }
  
-  updateContact(Contact, id, body.name, body.number)
+  updateContact(Contact, id, name, number)
   .then((result) => {
     console.log(`updated ${result.name} ${result.number} in the phonebook `);
     response.json(result);
@@ -129,6 +119,18 @@ app.put("/api/persons/:id", (request, response, next) => {
 });
 
 app.use(unknownEndpoint);
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({error: error.message})
+  }
+
+  next(error)
+}
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;

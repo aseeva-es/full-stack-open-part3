@@ -5,5 +5,5 @@ module.exports = function updateContact(Contact, id, name, number ){
     number: number,
   }
 
-  return Contact.findByIdAndUpdate(id, contact, { new: true })
+  return Contact.findByIdAndUpdate(id, contact, { new: true, runValidators: true, context: 'query'  })
 }
