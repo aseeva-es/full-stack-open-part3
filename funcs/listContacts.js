@@ -1,3 +1,3 @@
 module.exports = function listContacts(Contact){
-  return Contact.find({});
+  return Contact.find({})
 }
